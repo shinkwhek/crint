@@ -1,5 +1,10 @@
 # crint
 
+## Dependencies
+
++ OCaml
++ LaTeX
+
 ## Build
 
 ```
