@@ -4,11 +4,13 @@ let _ =
 
   print_endline "==== ==== ==== CREATE INTEGRAL ==== ==== ====";
 
-  let test_1 = Randomize.expr 3 in
+  let e = Randomize.expr 3 in
 
   print_endline "---- ---- ---- Type ---- ---- ----";
-  print_endline(Ast.show(test_1));
+  print_endline(Ast.show(e));
   print_endline "---- ---- ---- LaTeX ---- ---- ----";
-  print_endline(Eval.eval(test_1));
-
+  print_endline(Eval.eval(e));
+  print_endline "---- ---- ---- Diff ---- ---- ----";
+  print_endline(Eval.eval(Differential.cul(e)));
+  
   print_endline "";

@@ -1,10 +1,10 @@
-type t = CONST | VAR | OP | FUNC
+type t = CONST | NG | VAR | OP | FUNC
          | PLUS | MINUS | TIME | DIVID
-         | EXP | LN | SIN | ASIN | COS | ACOS | TAN | ATAN
+         | POW | SQRT | EXP | LN | SIN | ASIN | COS | ACOS | TAN | ATAN
 
-let g_lst    : t list = [ CONST; VAR; OP; FUNC ] 
+let g_lst    : t list = [ CONST; NG; VAR; OP; FUNC ] 
 let op_lst   : t list = [ PLUS; MINUS; TIME; DIVID ] 
-let func_lst : t list = [ EXP; LN; SIN; ASIN; COS; ACOS; TAN; ATAN ] 
+let func_lst : t list = [ POW; SQRT; EXP; LN; SIN; ASIN; COS; ACOS; TAN; ATAN ] 
 
 let random_get (l: t list) : t = List.nth l (Random.int (List.length l))
   
@@ -12,8 +12,11 @@ let rec expr_randomize (depth: int) : Ast.t =
   if depth <> 0 then
     begin match (random_get g_lst) with
     | CONST -> let c = 1 + (Random.int 9) in
-               Ast.Const(string_of_int(c))
+               Ast.Const(c)
 
+    | NG    -> let e1 = expr_randomize (depth) in
+               Ast.Ng(e1)
+               
     | VAR   -> Ast.Var("x")
 
     | OP -> begin
@@ -31,6 +34,8 @@ let rec expr_randomize (depth: int) : Ast.t =
     | FUNC -> begin
         let e1 = expr_randomize (depth - 1) in
         begin match (random_get func_lst) with
+        | POW   -> Ast.Func(Ast.Pow(e1, expr_const_or_var()))
+        | SQRT  -> Ast.Func(Ast.Sqrt(e1))
         | EXP   -> Ast.Func(Ast.Exp(e1))
         | LN    -> Ast.Func(Ast.Ln(e1))
         | SIN   -> Ast.Func(Ast.Sin(e1))
@@ -46,15 +51,18 @@ let rec expr_randomize (depth: int) : Ast.t =
     | _ -> Ast.Null
     end
   else
-    begin match (random_get [CONST; VAR]) with
-    | CONST -> let c = 1 + (Random.int 9) in
-               Ast.Const(string_of_int(c))
-    | VAR   -> Ast.Var("x")
-    | _     -> Ast.Null
-    end
-             
+    Ast.Var("x")
+
+and expr_const_or_var () =
+  begin match (random_get [CONST; VAR]) with
+  | CONST   -> let c = 1+(Random.int 9) in
+               Ast.Const(c)
+  | VAR     -> Ast.Var("x")
+  | _       -> Ast.Null
+  end
+  
 let expr (depth: int) : Ast.t =
   let e = expr_randomize(depth) in
-  Ast.Int(e)
+  e
   
   

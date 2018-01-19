@@ -2,7 +2,8 @@
 type t =
   | Null
   | Int of t 
-  | Const of string
+  | Const of int
+  | Ng of t
   | Var of string
   | Op of operator
   | Func of func
@@ -14,6 +15,8 @@ and operator =
   | Divid of t * t
 
 and func =
+  | Pow of t * t
+  | Sqrt of t
   | Exp of t
   | Ln of t
   | Sin of t
