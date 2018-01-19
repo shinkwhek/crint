@@ -2,16 +2,16 @@
 let rec eval = function
   | Ast.Null      -> ""
   | Ast.Int(e)    -> "\\int{" ^ eval(e) ^ "}dx"
-  | Ast.Ng(e)     -> "{-{" ^ eval(e) ^ "}}"
+  | Ast.Ng(e)     -> "(-" ^ eval(e) ^ ")"
   | Ast.Const(c)  -> string_of_int(c)
   | Ast.Var(s)    -> s
   | Ast.Op(e)     -> eval_op(e)
   | Ast.Func(e)   -> eval_func(e)
 
 and eval_op = function
-  | Ast.Plus(e1, e2)  -> "{" ^ eval(e1) ^ "}+{" ^ eval(e2) ^ "}" 
-  | Ast.Minus(e1, e2) -> "{" ^ eval(e1) ^ "}-{" ^ eval(e2) ^ "}"
-  | Ast.Time(e1, e2)  -> "{" ^ eval(e1) ^ "}{" ^ eval(e2) ^ "}"
+  | Ast.Plus(e1, e2)  -> "(" ^ eval(e1) ^ "+" ^ eval(e2) ^ ")" 
+  | Ast.Minus(e1, e2) -> "(" ^ eval(e1) ^ "-" ^ eval(e2) ^ ")"
+  | Ast.Time(e1, e2)  -> "(" ^ eval(e1) ^ ")(" ^ eval(e2) ^ ")"
   | Ast.Divid(e1, e2) -> "\\frac{" ^ eval(e1) ^ "}{" ^ eval(e2) ^ "}"
 
 and eval_func = function

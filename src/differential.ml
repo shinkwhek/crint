@@ -31,7 +31,7 @@ and cul_func (e: Ast.func) : Ast.t =
   match e with
   | Ast.Pow(e1, Ast.Const(n)) -> let e1' = cul(e1) in
                                  let e2' = Ast.Func(Ast.Pow(e1, Ast.Const(n-1))) in
-                                 Ast.Op(Ast.Time(Ast.Const(n - 1), (Ast.Op(Ast.Time(e1', e2')))))
+                                 Ast.Op(Ast.Time(Ast.Const(n), (Ast.Op(Ast.Time(e1', e2')))))
 
   | Ast.Pow(e1, Ast.Var(s)) -> let e1' = Ast.Op(Ast.Time(Ast.Var(s), Ast.Func(Ast.Ln(e1)))) in
                                let e2' = Ast.Func(Ast.Exp(e1')) in
