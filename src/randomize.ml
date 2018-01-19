@@ -9,12 +9,12 @@ let func_lst : t list = [ POW; SQRT; EXP; LN; SIN; ASIN; COS; ACOS; TAN; ATAN ]
 let random_get (l: t list) : t = List.nth l (Random.int (List.length l))
   
 let rec expr_randomize (depth: int) : Ast.t =
-  if depth <> 0 then
+  if depth > 0 then
     begin match (random_get g_lst) with
     | CONST -> let c = 1 + (Random.int 9) in
                Ast.Const(c)
 
-    | NG    -> let e1 = expr_randomize (depth) in
+    | NG    -> let e1 = expr_randomize (depth - 1) in
                Ast.Ng(e1)
                
     | VAR   -> Ast.Var("x")
