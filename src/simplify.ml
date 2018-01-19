@@ -4,13 +4,15 @@ let rec eval (e: Ast.t) : Ast.t =
   | Ast.Var(s) -> Ast.Var(s)
   | Ast.Const(0) -> Ast.Const(0)
   | Ast.Ng(Ast.Const(0)) -> Ast.Const(0)
-  | Ast.Ng(Ast.Ng(e)) -> eval(e)
+  | Ast.Ng(Ast.Ng(e)) -> e
   | Ast.Ng(e) -> Ast.Ng(eval(e))
                        
   | Ast.Op(Ast.Plus(e1, e2)) ->
      begin match e1, e2 with
      | Ast.Const(0), e | e, Ast.Const(0) -> e
      | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 + n2)
+     | Ast.Ng(e1), e2 -> Ast.Op(Ast.Minus(e2, e1))
+     | e1, Ast.Ng(e2) -> Ast.Op(Ast.Minus(e1, e2))
      | Ast.Var(s1), Ast.Var(s2) ->
         if s1 = s2 then
           Ast.Op(Ast.Time(Ast.Const(2), Ast.Var(s1)))
@@ -25,8 +27,11 @@ let rec eval (e: Ast.t) : Ast.t =
 
   | Ast.Op(Ast.Minus(e1, e2)) ->
      begin match e1, e2 with
-     | Ast.Const(0), e | e, Ast.Const(0) -> e
+     | Ast.Const(0), e -> Ast.Ng(e)
+     | e, Ast.Const(0) -> e
      | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 - n2)
+     | Ast.Ng(e1), e2 -> Ast.Ng(Ast.Op(Ast.Plus(e1, e2)))
+     | e1, Ast.Ng(e2) -> Ast.Op(Ast.Plus(e1, e2))
      | _ ->
         if e1 = e2 then
           Ast.Const(0)
@@ -39,6 +44,7 @@ let rec eval (e: Ast.t) : Ast.t =
      | Ast.Const(0), e | e, Ast.Const(0) -> Ast.Const(0)
      | Ast.Const(1), e | e, Ast.Const(1) -> e
      | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 * n2)
+     | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Time(e1,e2))))
      | _ ->
         if e1 = e2 then
           Ast.Func(Ast.Pow(eval(e1), Ast.Const(2)))
@@ -50,7 +56,7 @@ let rec eval (e: Ast.t) : Ast.t =
      begin match e1, e2 with
      | Ast.Const(0), _ -> Ast.Const(0)
      | e, Ast.Const(1) -> eval(e)
-     | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Divid(e1,e2))))
+     | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Divid(e1,e2))))
      | _ ->
         if e1 = e2 then
           Ast.Const(1)
@@ -59,6 +65,8 @@ let rec eval (e: Ast.t) : Ast.t =
      end
   | Ast.Func(Ast.Pow(e1,e2)) ->
      begin match e1, e2 with
+     | Ast.Const(0), _ -> Ast.Const(0)
+     | Ast.Const(1), _ -> Ast.Const(1)
      | _, Ast.Const(0) -> Ast.Const(1)
      | e, Ast.Const(1) -> eval(e)
      | _ -> Ast.Func(Ast.Pow(eval(e1), eval(e2)))

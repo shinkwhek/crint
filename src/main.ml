@@ -15,7 +15,7 @@ let _ =
   print_endline(Latex.eval(e));
 
   print_endline "---- ---- ---- Diff ---- ---- ----";
-  let r = Differential.cul e |> Simplify.iter !limit |>  Latex.eval in
-  print_endline(r);
+  let r = Differential.cul e |> Simplify.iter !limit in
+  print_endline(Latex.eval(r));
   
   print_endline "";
