@@ -2,7 +2,7 @@
 let limit = ref 1000
 
 let _ =
-  Random.init (int_of_float (10000.0 *. (Unix.gettimeofday())));
+  Random.self_init ();
 
   print_endline "==== ==== ==== CREATE INTEGRAL ==== ==== ====";
 
