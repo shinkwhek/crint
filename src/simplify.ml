@@ -45,6 +45,7 @@ let rec eval (e: Ast.t) : Ast.t =
      | Ast.Const(1), e | e, Ast.Const(1) -> e
      | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 * n2)
      | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Time(e1,e2))))
+     | Ast.Op(Ast.Divid(e1,e2)), Ast.Op(Ast.Divid(e3,e4)) -> Ast.Op(Ast.Divid(Ast.Op(Ast.Time(e1,e3)), Ast.Op(Ast.Time(e2,e4))))
      | _ ->
         if e1 = e2 then
           Ast.Func(Ast.Pow(eval(e1), Ast.Const(2)))
@@ -56,7 +57,9 @@ let rec eval (e: Ast.t) : Ast.t =
      begin match e1, e2 with
      | Ast.Const(0), _ -> Ast.Const(0)
      | e, Ast.Const(1) -> eval(e)
-     | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Divid(e1,e2))))
+     | Ast.Ng(e1'), e2' | e1', Ast.Ng(e2') -> Ast.Ng(eval(Ast.Op(Ast.Divid(e1',e2'))))
+     | Ast.Op(Ast.Divid(e1',e2')), e3' -> Ast.Op(Ast.Divid(e1', Ast.Op(Ast.Time(e2',e3'))))
+     | e1', Ast.Op(Ast.Divid(e2',e3')) -> Ast.Op(Ast.Divid(Ast.Op(Ast.Time(e1',e3')), e2'))
      | _ ->
         if e1 = e2 then
           Ast.Const(1)

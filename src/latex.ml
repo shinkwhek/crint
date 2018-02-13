@@ -11,11 +11,20 @@ let rec eval = function
 and eval_op = function
   | Ast.Plus(e1, e2)  -> "(" ^ eval(e1) ^ "+" ^ eval(e2) ^ ")" 
   | Ast.Minus(e1, e2) -> "(" ^ eval(e1) ^ "-" ^ eval(e2) ^ ")"
-  | Ast.Time(e1, e2)  -> "(" ^ eval(e1) ^ "" ^ eval(e2) ^ ")"
+  | Ast.Time(e1, e2)  -> "{" ^ eval(e1) ^ "" ^ eval(e2) ^ "}"
   | Ast.Divid(e1, e2) -> "\\frac{" ^ eval(e1) ^ "}{" ^ eval(e2) ^ "}"
 
 and eval_func = function
-  | Ast.Pow(e1,e2) -> "{" ^ eval(e1) ^ "}^{" ^ eval(e2) ^ "}"
+  | Ast.Pow(e1,e2) ->
+      begin match e1 with
+      | Ast.Func(Ast.Sin(e))  -> "\\sin^{" ^ eval(e2) ^ "}{" ^ eval(e) ^ "}"
+      | Ast.Func(Ast.Asin(e)) -> "\\asin^{" ^ eval(e2) ^ "}{" ^ eval(e) ^ "}"
+      | Ast.Func(Ast.Cos(e))  -> "\\cos^{" ^ eval(e2) ^ "}{" ^ eval(e) ^ "}"
+      | Ast.Func(Ast.Acos(e)) -> "\\acos^{" ^ eval(e2) ^ "}{" ^ eval(e) ^ "}"
+      | Ast.Func(Ast.Tan(e))  -> "\\tan^{" ^ eval(e2) ^ "}{" ^ eval(e) ^ "}"
+      | Ast.Func(Ast.Atan(e)) -> "\\atan^{" ^ eval(e2) ^ "}{" ^ eval(e) ^ "}"
+      | _ -> "{" ^ eval(e1) ^ "}^{" ^ eval(e2) ^ "}"
+      end
   | Ast.Sqrt(e)    -> "\\sqrt{" ^ eval(e) ^ "}"
   | Ast.Exp(e)     -> "\\e^{"   ^ eval(e) ^ "}"
   | Ast.Ln(e)      -> "\\log{"  ^ eval(e) ^ "}"
