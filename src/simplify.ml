@@ -44,7 +44,10 @@ let rec eval (e: Ast.t) : Ast.t =
      | Ast.Const(0), e | e, Ast.Const(0) -> Ast.Const(0)
      | Ast.Const(1), e | e, Ast.Const(1) -> e
      | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 * n2)
+     | e, Ast.Const(_) -> Ast.Op(Ast.Time(e2, e1))
      | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Time(e1,e2))))
+     | Ast.Op(Ast.Time(Ast.Const(c), e2)), e3 -> Ast.Op(Ast.Time(Ast.Const(c), Ast.Op(Ast.Time(e2, e3))))
+     | e1, Ast.Op(Ast.Time(Ast.Const(c), e3)) -> Ast.Op(Ast.Time(Ast.Const(c), Ast.Op(Ast.Time(e1, e3))))
      | Ast.Op(Ast.Divid(e1,e2)), Ast.Op(Ast.Divid(e3,e4)) -> Ast.Op(Ast.Divid(Ast.Op(Ast.Time(e1,e3)), Ast.Op(Ast.Time(e2,e4))))
      | _ ->
         if e1 = e2 then
