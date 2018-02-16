@@ -1,12 +1,16 @@
 
 let rec eval (e: Ast.t) : Ast.t =
   match e with
+  (* No Change *)
   | Ast.Var(s) -> Ast.Var(s)
   | Ast.Const(0) -> Ast.Const(0)
+                  
+  (* simplify negative *)
   | Ast.Ng(Ast.Const(0)) -> Ast.Const(0)
   | Ast.Ng(Ast.Ng(e)) -> e
   | Ast.Ng(e) -> Ast.Ng(eval(e))
-                       
+
+  (* simplify (_ + _) *)          
   | Ast.Op(Ast.Plus(e1, e2)) ->
      begin match e1, e2 with
      | Ast.Const(0), e | e, Ast.Const(0) -> e
@@ -25,6 +29,7 @@ let rec eval (e: Ast.t) : Ast.t =
           Ast.Op(Ast.Plus(eval(e1), eval(e2)))
      end
 
+  (* simplify (_ - _) *)
   | Ast.Op(Ast.Minus(e1, e2)) ->
      begin match e1, e2 with
      | Ast.Const(0), e -> Ast.Ng(e)
@@ -38,7 +43,8 @@ let rec eval (e: Ast.t) : Ast.t =
         else
           Ast.Op(Ast.Minus(eval(e1), eval(e2)))
      end
-    
+
+  (* simplify (_ * _) *)
   | Ast.Op(Ast.Time(e1, e2)) ->
      begin match e1, e2 with
      | Ast.Const(0), e | e, Ast.Const(0) -> Ast.Const(0)
@@ -56,7 +62,8 @@ let rec eval (e: Ast.t) : Ast.t =
         else
           Ast.Op(Ast.Time(eval(e1), eval(e2)))
      end
-    
+
+  (* simplify (_ / _) *)
   | Ast.Op(Ast.Divid(e1, e2)) ->
      begin match e1, e2 with
      | Ast.Const(0), _ -> Ast.Const(0)
@@ -70,6 +77,8 @@ let rec eval (e: Ast.t) : Ast.t =
         else
           Ast.Op(Ast.Divid(eval(e1), eval(e2)))
      end
+
+  (* simplify (_^_) *)
   | Ast.Func(Ast.Pow(e1,e2)) ->
      begin match e1, e2 with
      | Ast.Const(0), _ -> Ast.Const(0)
@@ -78,19 +87,24 @@ let rec eval (e: Ast.t) : Ast.t =
      | _, Ast.Const(1) -> eval(e1)
      | _ -> Ast.Func(Ast.Pow(eval(e1), eval(e2)))
      end
+
+  (* simplify (sqrt _) *)
   | Ast.Func(Ast.Sqrt(e)) ->
      begin match e with
      | Ast.Const(0) -> Ast.Const(0)
      | Ast.Const(1) -> Ast.Const(1)
      | _ -> Ast.Func(Ast.Sqrt(eval(e)))
      end
+
+  (* simplify (e^_) *)
   | Ast.Func(Ast.Exp(e)) ->
      begin match e with
      | Ast.Const(0) -> Ast.Const(1)
      | Ast.Const(1) -> Ast.Var("\\e")
      | _ -> Ast.Func(Ast.Exp(eval(e)))
      end
-    
+
+  (* simplify other function *)
   | Ast.Func(Ast.Ln(e)) -> Ast.Func(Ast.Ln(eval(e)))
   | Ast.Func(Ast.Sin(e)) -> Ast.Func(Ast.Sin(eval(e)))
   | Ast.Func(Ast.Asin(e)) -> Ast.Func(Ast.Asin(eval(e)))
