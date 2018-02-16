@@ -46,6 +46,7 @@ let rec eval (e: Ast.t) : Ast.t =
      | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 * n2)
      | e, Ast.Const(_) -> Ast.Op(Ast.Time(e2, e1))
      | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Time(e1,e2))))
+     | Ast.Const(c1), Ast.Op(Ast.Time(Ast.Const(c2),e1)) -> Ast.Op(Ast.Time(Ast.Const(c1 * c2), e1))
      | Ast.Op(Ast.Time(Ast.Const(c), e2)), e3 -> Ast.Op(Ast.Time(Ast.Const(c), Ast.Op(Ast.Time(e2, e3))))
      | e1, Ast.Op(Ast.Time(Ast.Const(c), e3)) -> Ast.Op(Ast.Time(Ast.Const(c), Ast.Op(Ast.Time(e1, e3))))
      | Ast.Op(Ast.Divid(e1,e2)), Ast.Op(Ast.Divid(e3,e4)) -> Ast.Op(Ast.Divid(Ast.Op(Ast.Time(e1,e3)), Ast.Op(Ast.Time(e2,e4))))
@@ -74,7 +75,7 @@ let rec eval (e: Ast.t) : Ast.t =
      | Ast.Const(0), _ -> Ast.Const(0)
      | Ast.Const(1), _ -> Ast.Const(1)
      | _, Ast.Const(0) -> Ast.Const(1)
-     | e, Ast.Const(1) -> eval(e)
+     | _, Ast.Const(1) -> eval(e1)
      | _ -> Ast.Func(Ast.Pow(eval(e1), eval(e2)))
      end
   | Ast.Func(Ast.Sqrt(e)) ->
