@@ -2,26 +2,29 @@ type t = CONST | NG | VAR | OP | FUNC
          | PLUS | MINUS | TIME | DIVID
          | POW | SQRT | EXP | LN | SIN | ASIN | COS | ACOS | TAN | ATAN
 
-let g_lst    : t list = [ CONST; NG; VAR; OP; FUNC ] 
-let op_lst   : t list = [ PLUS; MINUS; TIME; DIVID ] 
+let g_lst    : t list = [ OP; OP; FUNC ] 
+let gr_lst   : t list = [ CONST; VAR; VAR; OP; OP; FUNC; FUNC ]
+let op_lst   : t list = [ PLUS; MINUS; TIME; TIME; DIVID; DIVID ] 
 let func_lst : t list = [ POW; SQRT; EXP; LN; SIN; ASIN; COS; ACOS; TAN; ATAN ] 
 
 let random_get (l: t list) : t = List.nth l (Random.int (List.length l))
   
-let rec expr_randomize (depth: int) : Ast.t =
+let rec expr_randomize (depth: int) (initial: int) : Ast.t =
   if depth > 0 then
-    begin match (random_get g_lst) with
+    begin match (if depth = initial
+                 then (random_get g_lst)
+                 else (random_get gr_lst)) with
     | CONST -> let c = 1 + (Random.int 9) in
                Ast.Const(c)
 
-    | NG    -> let e1 = expr_randomize (depth - 1) in
+    | NG    -> let e1 = expr_randomize (depth - 1) initial in
                Ast.Ng(e1)
                
     | VAR   -> Ast.Var("x")
 
     | OP -> begin
-        let e1 = expr_randomize (depth - 1) in
-        let e2 = expr_randomize (depth - 1) in
+        let e1 = expr_randomize (depth - 1) initial in
+        let e2 = expr_randomize (depth - 1) initial in
         begin match (random_get op_lst) with
         | PLUS  -> Ast.Op(Ast.Plus(e1, e2))
         | MINUS -> Ast.Op(Ast.Minus(e1, e2))
@@ -32,7 +35,7 @@ let rec expr_randomize (depth: int) : Ast.t =
       end
 
     | FUNC -> begin
-        let e1 = expr_randomize (depth - 1) in
+        let e1 = expr_randomize (depth - 1) initial in
         begin match (random_get func_lst) with
         | POW   -> Ast.Func(Ast.Pow(e1, expr_const_or_var()))
         | SQRT  -> Ast.Func(Ast.Sqrt(e1))
@@ -54,7 +57,7 @@ let rec expr_randomize (depth: int) : Ast.t =
     Ast.Var("x")
 
 and expr_const_or_var () =
-  begin match (random_get [CONST; VAR]) with
+  begin match (random_get [CONST; VAR; VAR]) with
   | CONST   -> let c = 1+(Random.int 9) in
                Ast.Const(c)
   | VAR     -> Ast.Var("x")
@@ -62,7 +65,7 @@ and expr_const_or_var () =
   end
   
 let expr (depth: int) : Ast.t =
-  let e = expr_randomize(depth) in
+  let e = expr_randomize depth depth in
   e
   
   
