@@ -2,17 +2,11 @@
 
 ## Dependencies
 
-+ OCaml
++ dotnet
 + LaTeX
 
-## Build
+## Build & Run
 
 ```
-$ make
-```
-
-## Run
-
-```
-$ ./bin/crint
+$ dotnet run
 ```
