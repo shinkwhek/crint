@@ -5,6 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Ast.fs" />
+    <Compile Include="Randomize.fs" />
+    <Compile Include="Simplify.fs" />
+    <Compile Include="Differential.fs" />
+    <Compile Include="Latex.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>

@@ -2,8 +2,25 @@
 
 open System
 open Ast
+open Randomize
+open Simplify
+open Differential
+open Latex
+
+let limit = ref 1000
 
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+
+    let e = Randomize.expr 3 |> Simplify.iter !limit 
+
+    printfn "---- ---- ---- Source ---- ---- ----"
+    printfn "%s" (Latex.eval e)
+
+    printfn "---- ---- ----  Diff  ---- ---- ----"
+    let r = Differential.cul e |> Simplify.iter !limit
+    printfn "%s" (Latex.eval r)
+  
+    printfn ""
+
+    0
