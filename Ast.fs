@@ -1,3 +1,4 @@
+module Ast
 
 type t =
   | Null
@@ -25,4 +26,3 @@ and func =
   | Acos of t
   | Tan of t
   | Atan of t
-[@@deriving show]
