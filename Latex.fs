@@ -22,15 +22,15 @@ and evalFunc =
     function
         | Ast.Pow(e1,e2) ->
             match e1 with
-            | Ast.Func(Ast.Sin(e))  -> "\\sin+{" + eval(e2) + "}{" + eval(e) + "}"
-            | Ast.Func(Ast.Asin(e)) -> "\\asin+{" + eval(e2) + "}{" + eval(e) + "}"
-            | Ast.Func(Ast.Cos(e))  -> "\\cos+{" + eval(e2) + "}{" + eval(e) + "}"
-            | Ast.Func(Ast.Acos(e)) -> "\\acos+{" + eval(e2) + "}{" + eval(e) + "}"
-            | Ast.Func(Ast.Tan(e))  -> "\\tan+{" + eval(e2) + "}{" + eval(e) + "}"
-            | Ast.Func(Ast.Atan(e)) -> "\\atan+{" + eval(e2) + "}{" + eval(e) + "}"
-            | _ -> "{" + eval(e1) + "}+{" + eval(e2) + "}"
+            | Ast.Func(Ast.Sin(e))  -> "\\sin^{" + eval(e2) + "}{" + eval(e) + "}"
+            | Ast.Func(Ast.Asin(e)) -> "\\asin^{" + eval(e2) + "}{" + eval(e) + "}"
+            | Ast.Func(Ast.Cos(e))  -> "\\cos^{" + eval(e2) + "}{" + eval(e) + "}"
+            | Ast.Func(Ast.Acos(e)) -> "\\acos^{" + eval(e2) + "}{" + eval(e) + "}"
+            | Ast.Func(Ast.Tan(e))  -> "\\tan^{" + eval(e2) + "}{" + eval(e) + "}"
+            | Ast.Func(Ast.Atan(e)) -> "\\atan^{" + eval(e2) + "}{" + eval(e) + "}"
+            | _ -> "{" + eval(e1) + "}^{" + eval(e2) + "}"
         | Ast.Sqrt(e)    -> "\\sqrt{" + eval(e) + "}"
-        | Ast.Exp(e)     -> "\\e+{"   + eval(e) + "}"
+        | Ast.Exp(e)     -> "\\e^{"   + eval(e) + "}"
         | Ast.Ln(e)      -> "\\log{"  + eval(e) + "}"
         | Ast.Sin(e)     -> "\\sin{"  + eval(e) + "}"
         | Ast.Asin(e)    -> "\\asin{" + eval(e) + "}"
