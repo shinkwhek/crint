@@ -23,10 +23,10 @@ type T =
     | TAN
     | ATAN
 
-let glst    : T list = [ OP; OP; FUNC ] 
-let grlst   : T list = [ CONST; VAR; VAR; OP; OP; FUNC; FUNC ]
-let oplst   : T list = [ PLUS; MINUS; TIME; TIME; DIVID; DIVID ] 
-let funclst : T list = [ POW; SQRT; EXP; LN; SIN; ASIN; COS; ACOS; TAN; ATAN ] 
+let gLst    : T list = [ OP; OP; FUNC ] 
+let grLst   : T list = [ CONST; VAR; VAR; OP; OP; FUNC; FUNC ]
+let opLst   : T list = [ PLUS; MINUS; TIME; TIME; DIVID; DIVID ] 
+let funcLst : T list = [ POW; SQRT; EXP; LN; SIN; ASIN; COS; ACOS; TAN; ATAN ] 
 
 let rnd = System.Random ()
 
@@ -34,8 +34,8 @@ let randomGet (l: T list) : T = List.item (rnd.Next(List.length l)) l
   
 let rec exprRandomize (depth: int) (initial: int) : Ast.T =
   if depth > 0 then
-    match (if depth = initial then (randomGet glst)
-                              else (randomGet grlst)) with
+    match (if depth = initial then (randomGet gLst)
+                              else (randomGet grLst)) with
     | CONST -> let c = 1 + (rnd.Next 9) in
                Ast.Const(c)
     | NG    -> let e1 = exprRandomize (depth - 1) initial in
@@ -43,7 +43,7 @@ let rec exprRandomize (depth: int) (initial: int) : Ast.T =
     | VAR   -> Ast.Var("x")
     | OP -> let e1 = exprRandomize (depth - 1) initial in
             let e2 = exprRandomize (depth - 1) initial in
-            match (randomGet oplst) with
+            match (randomGet opLst) with
             | PLUS  -> Ast.Op(Ast.Plus(e1, e2))
             | MINUS -> Ast.Op(Ast.Minus(e1, e2))
             | TIME  -> Ast.Op(Ast.Time(e1, e2))
@@ -51,7 +51,7 @@ let rec exprRandomize (depth: int) (initial: int) : Ast.T =
             | _     -> Ast.Null
 
     | FUNC -> let e1 = exprRandomize (depth - 1) initial in
-              match (randomGet funclst) with
+              match (randomGet funcLst) with
               | POW   -> Ast.Func(Ast.Pow(e1, exprConstOrVar()))
               | SQRT  -> Ast.Func(Ast.Sqrt(e1))
               | EXP   -> Ast.Func(Ast.Exp(e1))

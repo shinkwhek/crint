@@ -12,22 +12,22 @@ let rec cul (e: Ast.T) : Ast.T =
 
 and culOp (e: Ast.Operator) : Ast.T =
     match e with
-    | Ast.Plus(e1,e2)  -> let e1', e2' = cul(e1), cul(e2) in
+    | Ast.Plus(e1,e2)  -> let e1', e2' = (cul(e1), cul(e2)) in
                           Ast.Op(Ast.Plus(e1', e2'))
 
-    | Ast.Minus(e1,e2) -> let e1', e2' = cul(e1), cul(e2) in
-                            Ast.Op(Ast.Minus(e1', e2'))
+    | Ast.Minus(e1,e2) -> let e1', e2' = (cul(e1), cul(e2)) in
+                          Ast.Op(Ast.Minus(e1', e2'))
 
-    | Ast.Time(e1,e2)  -> let e1', e2' = cul(e1), cul(e2) in
-                            let r1 = Ast.Op(Ast.Time(e1', e2)) in
-                            let r2 = Ast.Op(Ast.Time(e1, e2')) in
-                            Ast.Op(Ast.Plus(r1, r2))
+    | Ast.Time(e1,e2)  -> let e1', e2' = (cul(e1), cul(e2)) in
+                          let r1 = Ast.Op(Ast.Time(e1', e2)) in
+                          let r2 = Ast.Op(Ast.Time(e1, e2')) in
+                          Ast.Op(Ast.Plus(r1, r2))
 
-    | Ast.Divid(e1,e2) -> let e1', e2' = cul(e1), cul(e2) in
-                            let r1 = Ast.Op(Ast.Time(e1', e2)) in
-                            let r2 = Ast.Op(Ast.Time(e1, e2')) in
-                            let r3 = Ast.Func(Ast.Pow(e2, Ast.Const(2))) in
-                            Ast.Op(Ast.Divid(Ast.Op(Ast.Minus(r1, r2)), r3))
+    | Ast.Divid(e1,e2) -> let e1', e2' = (cul(e1), cul(e2)) in
+                          let r1 = Ast.Op(Ast.Time(e1', e2)) in
+                          let r2 = Ast.Op(Ast.Time(e1, e2')) in
+                          let r3 = Ast.Func(Ast.Pow(e2, Ast.Const(2))) in
+                          Ast.Op(Ast.Divid(Ast.Op(Ast.Minus(r1, r2)), r3))
                         
 and culFunc (e: Ast.Func) : Ast.T =
     match e with

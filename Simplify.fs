@@ -14,8 +14,9 @@ let rec eval (e: Ast.T) : Ast.T =
 
     (* simplify (_ + _) *)          
     | Ast.Op(Ast.Plus(e1, e2)) ->
-        match e1, e2 with
-        | Ast.Const(0), e | e, Ast.Const(0) -> e
+        match (e1, e2) with
+        | Ast.Const(0), e
+        | e, Ast.Const(0) -> e
         | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 + n2)
         | Ast.Ng(e1), e2 -> Ast.Op(Ast.Minus(e2, e1))
         | e1, Ast.Ng(e2) -> Ast.Op(Ast.Minus(e1, e2))
@@ -30,7 +31,7 @@ let rec eval (e: Ast.T) : Ast.T =
 
     (* simplify (_ - _) *)
     | Ast.Op(Ast.Minus(e1, e2)) ->
-        match e1, e2 with
+        match (e1, e2) with
         | Ast.Const(0), e -> Ast.Ng(e)
         | e, Ast.Const(0) -> e
         | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 - n2)
@@ -43,12 +44,15 @@ let rec eval (e: Ast.T) : Ast.T =
 
     (* simplify (_ * _) *)
     | Ast.Op(Ast.Time(e1, e2)) ->
-        match e1, e2 with
-        | Ast.Const(0), e | e, Ast.Const(0) -> Ast.Const(0)
-        | Ast.Const(1), e | e, Ast.Const(1) -> e
+        match (e1, e2) with
+        | Ast.Const(0), e
+        | e, Ast.Const(0) -> Ast.Const(0)
+        | Ast.Const(1), e
+        | e, Ast.Const(1) -> e
         | Ast.Const(n1), Ast.Const(n2) -> Ast.Const(n1 * n2)
         | e, Ast.Const(_) -> Ast.Op(Ast.Time(e2, e1))
-        | Ast.Ng(e1), e2 | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Time(e1,e2))))
+        | Ast.Ng(e1), e2
+        | e1, Ast.Ng(e2) -> Ast.Ng(eval(Ast.Op(Ast.Time(e1, e2))))
         | Ast.Const(c1), Ast.Op(Ast.Time(Ast.Const(c2),e1)) -> Ast.Op(Ast.Time(Ast.Const(c1 * c2), e1))
         | Ast.Op(Ast.Time(Ast.Const(c), e2)), e3 -> Ast.Op(Ast.Time(Ast.Const(c), Ast.Op(Ast.Time(e2, e3))))
         | e1, Ast.Op(Ast.Time(Ast.Const(c), e3)) -> Ast.Op(Ast.Time(Ast.Const(c), Ast.Op(Ast.Time(e1, e3))))
@@ -60,12 +64,13 @@ let rec eval (e: Ast.T) : Ast.T =
 
     (* simplify (_ / _) *)
     | Ast.Op(Ast.Divid(e1, e2)) ->
-        match e1, e2 with
+        match (e1, e2) with
         | Ast.Const(0), _ -> Ast.Const(0)
         | e, Ast.Const(1) -> eval(e)
-        | Ast.Ng(e1'), e2' | e1', Ast.Ng(e2') -> Ast.Ng(eval(Ast.Op(Ast.Divid(e1',e2'))))
-        | Ast.Op(Ast.Divid(e1',e2')), e3' -> Ast.Op(Ast.Divid(e1', Ast.Op(Ast.Time(e2',e3'))))
-        | e1', Ast.Op(Ast.Divid(e2',e3')) -> Ast.Op(Ast.Divid(Ast.Op(Ast.Time(e1',e3')), e2'))
+        | Ast.Ng(e1'), e2'
+        | e1', Ast.Ng(e2') -> Ast.Ng(eval(Ast.Op(Ast.Divid(e1', e2'))))
+        | Ast.Op(Ast.Divid(e1',e2')), e3' -> Ast.Op(Ast.Divid(e1', Ast.Op(Ast.Time(e2', e3'))))
+        | e1', Ast.Op(Ast.Divid(e2',e3')) -> Ast.Op(Ast.Divid(Ast.Op(Ast.Time(e1', e3')), e2'))
         | _ ->
             if e1 = e2
             then Ast.Const(1)
@@ -73,7 +78,7 @@ let rec eval (e: Ast.T) : Ast.T =
 
     (* simplify (_^_) *)
     | Ast.Func(Ast.Pow(e1,e2)) ->
-        match e1, e2 with
+        match (e1, e2) with
         | Ast.Const(0), _ -> Ast.Const(0)
         | Ast.Const(1), _ -> Ast.Const(1)
         | _, Ast.Const(0) -> Ast.Const(1)
